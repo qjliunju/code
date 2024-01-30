@@ -1,0 +1,17 @@
+library(lavaan)
+library(semPlot)
+library(conflicted)
+library(tidyverse)
+
+SEM.data<-read.csv("QSB.csv",row.names = 1,header=T)
+SEM.data<-data.frame(scale(SEM.data,center = F))
+
+model.sem<-"
+function.PC1~QSB.PC1+QSB.nodes+avgK+robustness
+robustness~PNC+QSB.PC1+avgK
+avgK~modularity+QSB.nodes+avgCC
+PNC~QSB.nodes+modularity+QSB.PC1
+modularity~QSB.nodes+QSB.keystone+avgCC
+"
+fit.sem<-sem(model.sem,data=SEM.data)
+summary(fit.sem, fit.measures=T, standardized=T, modindices=T, rsq=T)
